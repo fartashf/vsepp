@@ -1,7 +1,7 @@
 # Improved Visual Semantic Embeddings
 
 Code for the image-caption retrieval methods from ["VSE++: Improved 
-Visual-Semantic Embeddings" (Faghri, Fleet, Kiros, Fidler. 2017)](https://arxiv.org/abs/1707.05612)).
+Visual-Semantic Embeddings" (Faghri, Fleet, Kiros, Fidler. 2017)](https://arxiv.org/abs/1707.05612).
 
 ## Dependencies
 We recommended to use Anaconda for the following packages.
@@ -65,9 +65,9 @@ Arguments used to train pre-trained models:
 
 If you found this code useful, please cite the following paper:
 
-    @article{fartash2017vsepp,
+    @article{faghri2017vse++,
       title={VSE++: Improved Visual-Semantic Embeddings},
-      author={Faghri, Fartash and Fleet, David J. and Kiros, Jamie R. and Fidler, Sanja},
+      author={Faghri, Fartash and Fleet, David J and Kiros, Jamie Ryan and Fidler, Sanja},
       journal={arXiv preprint arXiv:1707.05612},
       year={2017}
     }
