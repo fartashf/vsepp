@@ -1,7 +1,8 @@
-# Improved Visual Semantic Embeddings
+# Improving Visual-Semantic Embeddings with Hard Negatives
 
-Code for the image-caption retrieval methods from ["VSE++: Improved 
-Visual-Semantic Embeddings" (Faghri, Fleet, Kiros, Fidler. 2017)](https://arxiv.org/abs/1707.05612).
+Code for the image-caption retrieval methods from ["VSE++: Improving 
+Visual-Semantic Embeddings with Hard Negatives" (Faghri, Fleet, Kiros, Fidler.  
+2017)](https://arxiv.org/abs/1707.05612).
 
 ## Dependencies
 We recommended to use Anaconda for the following packages.
@@ -66,7 +67,7 @@ Arguments used to train pre-trained models:
 If you found this code useful, please cite the following paper:
 
     @article{faghri2017vse++,
-      title={VSE++: Improved Visual-Semantic Embeddings},
+      title={VSE++: Improving Visual-Semantic Embeddings with Hard Negatives},
       author={Faghri, Fartash and Fleet, David J and Kiros, Jamie Ryan and Fidler, Sanja},
       journal={arXiv preprint arXiv:1707.05612},
       year={2017}
