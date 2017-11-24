@@ -7,7 +7,7 @@ Visual-Semantic Embeddings" (Faghri, Fleet, Kiros, Fidler. 2017)](https://arxiv.
 We recommended to use Anaconda for the following packages.
 
 * Python 2.7
-* [PyTorch](http://pytorch.org/) (>0.1.12)
+* [PyTorch](http://pytorch.org/) (>0.2)
 * [NumPy](http://www.numpy.org/) (>1.12.1)
 * [TensorBoard](https://github.com/TeamHG-Memex/tensorboard_logger)
 

@@ -13,8 +13,8 @@ from collections import OrderedDict
 def l2norm(X):
     """L2-normalize columns of X
     """
-    norm = torch.pow(X, 2).sum(dim=1).sqrt()
-    X = torch.div(X, norm.expand_as(X))
+    norm = torch.pow(X, 2).sum(dim=1, keepdim=True).sqrt()
+    X = torch.div(X, norm)
     return X
 
 
@@ -218,7 +218,7 @@ def order_sim(im, s):
     """
     YmX = (s.unsqueeze(1).expand(s.size(0), im.size(0), s.size(1))
            - im.unsqueeze(0).expand(s.size(0), im.size(0), s.size(1)))
-    score = -YmX.clamp(min=0).pow(2).sum(2).squeeze(2).sqrt().t()
+    score = -YmX.clamp(min=0).pow(2).sum(2).sqrt().t()
     return score
 
 
