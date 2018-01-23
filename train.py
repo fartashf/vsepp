@@ -136,11 +136,11 @@ def train(opt, train_loader, model, epoch, val_loader):
     data_time = AverageMeter()
     train_logger = LogCollector()
 
-    # switch to train mode
-    model.train_start()
-
     end = time.time()
     for i, train_data in enumerate(train_loader):
+        # switch to train mode
+        model.train_start()
+
         # measure data loading time
         data_time.update(time.time() - end)
 
