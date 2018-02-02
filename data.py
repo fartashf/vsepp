@@ -313,12 +313,12 @@ def get_transform(data_name, split_name, opt):
                                       std=[0.229, 0.224, 0.225])
     t_list = []
     if split_name == 'train':
-        t_list = [transforms.RandomSizedCrop(opt.crop_size),
+        t_list = [transforms.RandomResizedCrop(opt.crop_size),
                   transforms.RandomHorizontalFlip()]
     elif split_name == 'val':
-        t_list = [transforms.Scale(256), transforms.CenterCrop(224)]
+        t_list = [transforms.Resize(256), transforms.CenterCrop(224)]
     elif split_name == 'test':
-        t_list = [transforms.Scale(256), transforms.CenterCrop(224)]
+        t_list = [transforms.Resize(256), transforms.CenterCrop(224)]
 
     t_end = [transforms.ToTensor(), normalizer]
     transform = transforms.Compose(t_list + t_end)
