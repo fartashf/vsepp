@@ -82,6 +82,26 @@ class EncoderImageFull(nn.Module):
 
         return model
 
+    def load_state_dict(self, state_dict):
+        """
+        Handle the models saved before commit pytorch/vision@989d52a
+        """
+        if 'cnn.classifier.1.weight' in state_dict:
+            state_dict['cnn.classifier.0.weight'] = state_dict[
+                'cnn.classifier.1.weight']
+            del state_dict['cnn.classifier.1.weight']
+            state_dict['cnn.classifier.0.bias'] = state_dict[
+                'cnn.classifier.1.bias']
+            del state_dict['cnn.classifier.1.bias']
+            state_dict['cnn.classifier.3.weight'] = state_dict[
+                'cnn.classifier.4.weight']
+            del state_dict['cnn.classifier.4.weight']
+            state_dict['cnn.classifier.3.bias'] = state_dict[
+                'cnn.classifier.4.bias']
+            del state_dict['cnn.classifier.4.bias']
+
+        super(EncoderImageFull, self).load_state_dict(state_dict)
+
     def init_weights(self):
         """Xavier initialization for the fully connected layer
         """
