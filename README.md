@@ -7,7 +7,7 @@ Visual-Semantic Embeddings with Hard Negatives" (Faghri, Fleet, Kiros, Fidler.
 ## Dependencies
 We recommended to use Anaconda for the following packages.
 
-* Python 2.7
+* Python 3.5
 * [PyTorch](http://pytorch.org/) (>0.2)
 * [NumPy](http://www.numpy.org/) (>1.12.1)
 * [TensorBoard](https://github.com/TeamHG-Memex/tensorboard_logger)
