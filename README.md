@@ -7,10 +7,14 @@ Code for the image-caption retrieval methods from
 ## Dependencies
 We recommended to use Anaconda for the following packages.
 
-* Python 2.7
-* [PyTorch](http://pytorch.org/) (>0.2)
+* Python 2.7 (Checkout branch `python3`)
+* [PyTorch](http://pytorch.org/) (>0.2) (Checkout branch `pytorch4.1`)
 * [NumPy](http://www.numpy.org/) (>1.12.1)
 * [TensorBoard](https://github.com/TeamHG-Memex/tensorboard_logger)
+* [pycocotools](https://github.com/cocodataset/cocoapi)
+* [torchvision]()
+* [matplotlib]()
+
 
 * Punkt Sentence Tokenizer:
 ```python
