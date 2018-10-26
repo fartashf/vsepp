@@ -84,38 +84,42 @@ def encode_data(model, data_loader, log_step=10, logging=print):
     # numpy array to keep all the embeddings
     img_embs = None
     cap_embs = None
-    for i, (images, captions, lengths, ids) in enumerate(data_loader):
-        # make sure val logger is used
-        model.logger = val_logger
+    with torch.no_grad():
+        for i, batch_data in enumerate(data_loader):
+            images, captions, lengths, ids = batch_data
+            # make sure val logger is used
+            model.logger = val_logger
 
-        # compute the embeddings
-        img_emb, cap_emb = model.forward_emb(images, captions, lengths,
-                                             volatile=True)
+            # compute the embeddings
+            img_emb, cap_emb = model.forward_emb(images, captions, lengths)
 
-        # initialize the numpy arrays given the size of the embeddings
-        if img_embs is None:
-            img_embs = np.zeros((len(data_loader.dataset), img_emb.size(1)))
-            cap_embs = np.zeros((len(data_loader.dataset), cap_emb.size(1)))
+            # initialize the numpy arrays given the size of the embeddings
+            if img_embs is None:
+                img_embs = np.zeros(
+                    (len(data_loader.dataset), img_emb.size(1)))
+                cap_embs = np.zeros(
+                    (len(data_loader.dataset), cap_emb.size(1)))
 
-        # preserve the embeddings by copying from gpu and converting to numpy
-        img_embs[ids] = img_emb.data.cpu().numpy().copy()
-        cap_embs[ids] = cap_emb.data.cpu().numpy().copy()
+            # preserve the embeddings by copying from GPU
+            # and converting to NumPy
+            img_embs[ids] = img_emb.data.cpu().numpy().copy()
+            cap_embs[ids] = cap_emb.data.cpu().numpy().copy()
 
-        # measure accuracy and record loss
-        model.forward_loss(img_emb, cap_emb)
+            # measure accuracy and record loss
+            model.forward_loss(img_emb, cap_emb)
 
-        # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
 
-        if i % log_step == 0:
-            logging('Test: [{0}/{1}]\t'
-                    '{e_log}\t'
-                    'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                    .format(
-                        i, len(data_loader), batch_time=batch_time,
-                        e_log=str(model.logger)))
-        del images, captions
+            if i % log_step == 0:
+                logging('Test: [{0}/{1}]\t'
+                        '{e_log}\t'
+                        'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                        .format(
+                            i, len(data_loader), batch_time=batch_time,
+                            e_log=str(model.logger)))
+            del images, captions
 
     return img_embs, cap_embs
 

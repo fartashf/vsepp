@@ -4,13 +4,20 @@ Code for the image-caption retrieval methods from
 **[VSE++: Improving Visual-Semantic Embeddings with Hard Negatives](https://arxiv.org/abs/1707.05612)**
 *, F. Faghri, D. J. Fleet, J. R. Kiros, S. Fidler, Proceedings of the British Machine Vision Conference (BMVC),  2018. (BMVC Spotlight)*
 
+**For compatibility with PyTorch4.1 the default behavior has changed such that 
+some of the results might not be reproduced. This is being investigated. Please 
+refer to issue #4**
+
 ## Dependencies
 We recommended to use Anaconda for the following packages.
 
 * Python 2.7
-* [PyTorch](http://pytorch.org/) (>0.2)
+* [PyTorch](http://pytorch.org/) (>0.4.1)
 * [NumPy](http://www.numpy.org/) (>1.12.1)
 * [TensorBoard](https://github.com/TeamHG-Memex/tensorboard_logger)
+* [pycocotools](https://github.com/cocodataset/cocoapi)
+* [torchvision]()
+* [matplotlib]()
 
 * Punkt Sentence Tokenizer:
 ```python

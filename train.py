@@ -139,14 +139,13 @@ def train(opt, train_loader, model, epoch, val_loader):
     data_time = AverageMeter()
     train_logger = LogCollector()
 
-    # switch to train mode
-    model.train_start()
-
     end = time.time()
     for i, train_data in enumerate(train_loader):
-        if opt.reset_train:
-            # Always reset to train mode, this is not the default behavior
-            model.train_start()
+        # Always reset to train mode
+        # TODO: This was not the original behavior and results are affected
+        # refer to issue #4. This is now default behavior for compatibility
+        # with PyTorch >4.1
+        model.train_start()
 
         # measure data loading time
         data_time.update(time.time() - end)
