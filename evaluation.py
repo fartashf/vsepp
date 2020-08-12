@@ -120,17 +120,21 @@ def encode_data(model, data_loader, log_step=10, logging=print):
     return img_embs, cap_embs
 
 
-def evalrank(model_path, data_path=None, split='dev', fold5=False):
+def evalrank(model_path, data_path=None, vocab_path=None, split='dev', fold5=False, on_gpu=False):
     """
     Evaluate a trained model on either dev or test. If `fold5=True`, 5 fold
     cross-validation is done (only for MSCOCO). Otherwise, the full data is
     used for evaluation.
     """
     # load model and options
-    checkpoint = torch.load(model_path)
+    device = 'cpu' if not on_gpu else 'cuda'
+    checkpoint = torch.load(model_path, map_location=torch.device(device))
     opt = checkpoint['opt']
     if data_path is not None:
         opt.data_path = data_path
+
+    if vocab_path is not None:
+        opt.vocab_path = vocab_path
 
     # load vocabulary used by the model
     with open(os.path.join(opt.vocab_path,
