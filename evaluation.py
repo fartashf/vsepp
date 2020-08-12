@@ -57,7 +57,7 @@ class LogCollector(object):
         """Concatenate the meters in one log line
         """
         s = ''
-        for i, (k, v) in enumerate(self.meters.iteritems()):
+        for i, (k, v) in enumerate(self.meters.items()):
             if i > 0:
                 s += '  '
             s += k + ' ' + str(v)
@@ -66,11 +66,11 @@ class LogCollector(object):
     def tb_log(self, tb_logger, prefix='', step=None):
         """Log using tensorboard
         """
-        for k, v in self.meters.iteritems():
+        for k, v in self.meters.items():
             tb_logger.log_value(prefix + k, v.val, step=step)
 
 
-def encode_data(model, data_loader, log_step=10, logging=print):
+def encode_data(model, data_loader, log_step=10, logging=print, on_gpu=False):
     """Encode all images and captions loadable by `data_loader`
     """
     batch_time = AverageMeter()
@@ -98,8 +98,14 @@ def encode_data(model, data_loader, log_step=10, logging=print):
             cap_embs = np.zeros((len(data_loader.dataset), cap_emb.size(1)))
 
         # preserve the embeddings by copying from gpu and converting to numpy
-        img_embs[ids] = img_emb.data.cpu().numpy().copy()
-        cap_embs[ids] = cap_emb.data.cpu().numpy().copy()
+        if on_gpu:
+            for i, id in enumerate(ids):
+                img_embs[id] = img_emb.data.cpu().numpy().copy()[i]
+                cap_embs[id] = cap_emb.data.cpu().numpy().copy()[i]
+        else:
+            for i, id in enumerate(ids):
+                img_embs[id] = img_emb.data.numpy().copy()[i]
+                cap_embs[id] = cap_emb.data.numpy().copy()[i]
 
         # measure accuracy and record loss
         model.forward_loss(img_emb, cap_emb)
@@ -120,17 +126,21 @@ def encode_data(model, data_loader, log_step=10, logging=print):
     return img_embs, cap_embs
 
 
-def evalrank(model_path, data_path=None, split='dev', fold5=False):
+def evalrank(model_path, data_path=None, vocab_path=None, split='dev', fold5=False, on_gpu=False):
     """
     Evaluate a trained model on either dev or test. If `fold5=True`, 5 fold
     cross-validation is done (only for MSCOCO). Otherwise, the full data is
     used for evaluation.
     """
     # load model and options
-    checkpoint = torch.load(model_path)
+    device = 'cpu' if not on_gpu else 'cuda'
+    checkpoint = torch.load(model_path, map_location=torch.device(device))
     opt = checkpoint['opt']
     if data_path is not None:
         opt.data_path = data_path
+
+    if vocab_path is not None:
+        opt.vocab_path = vocab_path
 
     # load vocabulary used by the model
     with open(os.path.join(opt.vocab_path,
@@ -149,7 +159,7 @@ def evalrank(model_path, data_path=None, split='dev', fold5=False):
                                   opt.batch_size, opt.workers, opt)
 
     print('Computing results...')
-    img_embs, cap_embs = encode_data(model, data_loader)
+    img_embs, cap_embs = encode_data(model, data_loader, on_gpu=on_gpu)
     print('Images: %d, Captions: %d' %
           (img_embs.shape[0] / 5, cap_embs.shape[0]))
 
@@ -209,7 +219,7 @@ def i2t(images, captions, npts=None, measure='cosine', return_ranks=False):
     Captions: (5N, K) matrix of captions
     """
     if npts is None:
-        npts = images.shape[0] / 5
+        npts = int(images.shape[0] / 5)
     index_list = []
 
     ranks = numpy.zeros(npts)
@@ -262,7 +272,8 @@ def t2i(images, captions, npts=None, measure='cosine', return_ranks=False):
     Captions: (5N, K) matrix of captions
     """
     if npts is None:
-        npts = images.shape[0] / 5
+        npts = int(images.shape[0] / 5)
+        print(npts)
     ims = numpy.array([images[i] for i in range(0, len(images), 5)])
 
     ranks = numpy.zeros(5 * npts)
