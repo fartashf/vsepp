@@ -70,7 +70,7 @@ class LogCollector(object):
             tb_logger.log_value(prefix + k, v.val, step=step)
 
 
-def encode_data(model, data_loader, log_step=10, logging=print):
+def encode_data(model, data_loader, log_step=10, logging=print, on_gpu=False):
     """Encode all images and captions loadable by `data_loader`
     """
     batch_time = AverageMeter()
@@ -98,8 +98,14 @@ def encode_data(model, data_loader, log_step=10, logging=print):
             cap_embs = np.zeros((len(data_loader.dataset), cap_emb.size(1)))
 
         # preserve the embeddings by copying from gpu and converting to numpy
-        img_embs[ids] = img_emb.data.cpu().numpy().copy()
-        cap_embs[ids] = cap_emb.data.cpu().numpy().copy()
+        if on_gpu:
+            for i, id in enumerate(ids):
+                img_embs[id] = img_emb.data.cpu().numpy().copy()[i]
+                cap_embs[id] = cap_emb.data.cpu().numpy().copy()[i]
+        else:
+            for i, id in enumerate(ids):
+                img_embs[id] = img_emb.data.numpy().copy()[i]
+                cap_embs[id] = cap_emb.data.numpy().copy()[i]
 
         # measure accuracy and record loss
         model.forward_loss(img_emb, cap_emb)
@@ -153,7 +159,7 @@ def evalrank(model_path, data_path=None, vocab_path=None, split='dev', fold5=Fal
                                   opt.batch_size, opt.workers, opt)
 
     print('Computing results...')
-    img_embs, cap_embs = encode_data(model, data_loader)
+    img_embs, cap_embs = encode_data(model, data_loader, on_gpu=on_gpu)
     print('Images: %d, Captions: %d' %
           (img_embs.shape[0] / 5, cap_embs.shape[0]))
 
