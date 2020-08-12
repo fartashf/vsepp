@@ -99,11 +99,13 @@ def encode_data(model, data_loader, log_step=10, logging=print, on_gpu=False):
 
         # preserve the embeddings by copying from gpu and converting to numpy
         if on_gpu:
-            img_embs[ids] = img_emb.data.cpu().numpy().copy()
-            cap_embs[ids] = cap_emb.data.cpu().numpy().copy()
+            for i, id in enumerate(ids):
+                img_embs[id] = img_emb.data.cpu().numpy().copy()[i]
+                cap_embs[id] = cap_emb.data.cpu().numpy().copy()[i]
         else:
-            img_embs[ids] = img_emb.data.numpy().copy()
-            cap_embs[ids] = cap_emb.data.numpy().copy()
+            for i, id in enumerate(ids):
+                img_embs[id] = img_emb.data.numpy().copy()[i]
+                cap_embs[id] = cap_emb.data.numpy().copy()[i]
 
         # measure accuracy and record loss
         model.forward_loss(img_emb, cap_emb)
