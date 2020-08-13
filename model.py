@@ -76,9 +76,12 @@ class EncoderImageFull(nn.Module):
 
         if arch.startswith('alexnet') or arch.startswith('vgg'):
             model.features = nn.DataParallel(model.features)
-            model.cuda()
+
         else:
-            model = nn.DataParallel(model).cuda()
+            model = nn.DataParallel(model)
+
+        if torch.cuda.is_available():
+            model.cuda()
 
         return model
 
