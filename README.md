@@ -37,6 +37,10 @@ We refer to the path of extracted files for `data.tar` as `$DATA_PATH` and
 files for `models.tar` as `$RUN_PATH`. Extract `vocab.tar` to `./vocab` 
 directory.
 
+*Update: The vocabulary was originally built using all sets (including test set 
+captions). Please see issue #29 for details. Please consider not using test set 
+captions if building up on this project.*
+
 ## Evaluate pre-trained models
 
 ```python
