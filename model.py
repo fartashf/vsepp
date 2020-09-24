@@ -206,7 +206,7 @@ class EncoderText(nn.Module):
         """
         # Embed word ids to vectors
         x = self.embed(x)
-        packed = pack_padded_sequence(x, lengths, batch_first=True)
+        packed = pack_padded_sequence(x, lengths, batch_first=True, enforce_sorted=True)
 
         # Forward propagate RNN
         out, _ = self.rnn(packed)
