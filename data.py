@@ -202,7 +202,7 @@ class PrecompDataset(data.Dataset):
 
         # Captions
         self.captions = []
-        with open(loc+'%s_caps.txt' % data_split, 'rb') as f:
+        with open(loc+'%s_caps.txt' % data_split, 'r') as f:
             for line in f:
                 self.captions.append(line.strip())
 
