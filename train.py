@@ -194,10 +194,10 @@ def validate(opt, val_loader, model):
     logging.info("Image to text: %.1f, %.1f, %.1f, %.1f, %.1f" %
                  (r1, r5, r10, medr, meanr))
     # image retrieval
-    (r1i, r5i, r10i, medri, meanr) = t2i(
+    (r1i, r5i, r10i, medri, meanri) = t2i(
         img_embs, cap_embs, measure=opt.measure)
     logging.info("Text to image: %.1f, %.1f, %.1f, %.1f, %.1f" %
-                 (r1i, r5i, r10i, medri, meanr))
+                 (r1i, r5i, r10i, medri, meanri))
     # sum of recalls to be used for early stopping
     currscore = r1 + r5 + r10 + r1i + r5i + r10i
 
@@ -211,7 +211,7 @@ def validate(opt, val_loader, model):
     tb_logger.log_value('r5i', r5i, step=model.Eiters)
     tb_logger.log_value('r10i', r10i, step=model.Eiters)
     tb_logger.log_value('medri', medri, step=model.Eiters)
-    tb_logger.log_value('meanr', meanr, step=model.Eiters)
+    tb_logger.log_value('meanri', meanri, step=model.Eiters)
     tb_logger.log_value('rsum', currscore, step=model.Eiters)
 
     return currscore
