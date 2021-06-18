@@ -37,12 +37,17 @@ We refer to the path of extracted files for `data.tar` as `$DATA_PATH` and
 files for `models.tar` as `$RUN_PATH`. Extract `vocab.tar` to `./vocab` 
 directory.
 
+*Update: The vocabulary was originally built using all sets (including test set 
+captions). Please see issue #29 for details. Please consider not using test set 
+captions if building up on this project.*
+
 ## Evaluate pre-trained models
 
 ```python
+python -c "\
 from vocab import Vocabulary
 import evaluation
-evaluation.evalrank("$RUN_PATH/coco_vse++/model_best.pth.tar", data_path="$DATA_PATH", split="test")'
+evaluation.evalrank('$RUN_PATH/coco_vse++/model_best.pth.tar', data_path='$DATA_PATH', split='test')"
 ```
 
 To do cross-validation on MSCOCO, pass `fold5=True` with a model trained using 
