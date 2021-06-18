@@ -5,7 +5,7 @@ import torchvision.models as models
 from torch.autograd import Variable
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import torch.backends.cudnn as cudnn
-from torch.nn.utils.clip_grad import clip_grad_norm
+from torch.nn.utils.clip_grad import clip_grad_norm_
 import numpy as np
 from collections import OrderedDict
 
@@ -76,7 +76,6 @@ class EncoderImageFull(nn.Module):
 
         if arch.startswith('alexnet') or arch.startswith('vgg'):
             model.features = nn.DataParallel(model.features)
-
         else:
             model = nn.DataParallel(model)
 
@@ -347,12 +346,12 @@ class VSE(object):
         self.img_enc.eval()
         self.txt_enc.eval()
 
-    def forward_emb(self, images, captions, lengths, volatile=False):
+    def forward_emb(self, images, captions, lengths):
         """Compute the image and caption embeddings
         """
         # Set mini-batch dataset
-        images = Variable(images, volatile=volatile)
-        captions = Variable(captions, volatile=volatile)
+        images = Variable(images)
+        captions = Variable(captions)
         if torch.cuda.is_available():
             images = images.cuda()
             captions = captions.cuda()
@@ -366,7 +365,7 @@ class VSE(object):
         """Compute the loss given pairs of image and caption embeddings
         """
         loss = self.criterion(img_emb, cap_emb)
-        self.logger.update('Le', loss.data[0], img_emb.size(0))
+        self.logger.update('Le', loss.item(), img_emb.size(0))
         return loss
 
     def train_emb(self, images, captions, lengths, ids=None, *args):
@@ -386,5 +385,5 @@ class VSE(object):
         # compute gradient and do SGD step
         loss.backward()
         if self.grad_clip > 0:
-            clip_grad_norm(self.params, self.grad_clip)
+            clip_grad_norm_(self.params, self.grad_clip)
         self.optimizer.step()

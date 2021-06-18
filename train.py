@@ -144,9 +144,8 @@ def train(opt, train_loader, model, epoch, val_loader):
 
     end = time.time()
     for i, train_data in enumerate(train_loader):
-        if opt.reset_train:
-            # Always reset to train mode, this is not the default behavior
-            model.train_start()
+        # Always reset to train mode, this is not the default behavior
+        model.train_start()
 
         # measure data loading time
         data_time.update(time.time() - end)

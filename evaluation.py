@@ -70,7 +70,7 @@ class LogCollector(object):
             tb_logger.log_value(prefix + k, v.val, step=step)
 
 
-def encode_data(model, data_loader, log_step=10, logging=print, on_gpu=False):
+def encode_data(model, data_loader, log_step=10, logging=print):
     """Encode all images and captions loadable by `data_loader`
     """
     batch_time = AverageMeter()
@@ -84,63 +84,54 @@ def encode_data(model, data_loader, log_step=10, logging=print, on_gpu=False):
     # numpy array to keep all the embeddings
     img_embs = None
     cap_embs = None
-    for i, (images, captions, lengths, ids) in enumerate(data_loader):
-        # make sure val logger is used
-        model.logger = val_logger
+    with torch.no_grad():
+        for i, (images, captions, lengths, ids) in enumerate(data_loader):
+            # make sure val logger is used
+            model.logger = val_logger
 
-        # compute the embeddings
-        img_emb, cap_emb = model.forward_emb(images, captions, lengths,
-                                             volatile=True)
+            # compute the embeddings
+            img_emb, cap_emb = model.forward_emb(images, captions, lengths)
 
-        # initialize the numpy arrays given the size of the embeddings
-        if img_embs is None:
-            img_embs = np.zeros((len(data_loader.dataset), img_emb.size(1)))
-            cap_embs = np.zeros((len(data_loader.dataset), cap_emb.size(1)))
+            # initialize the numpy arrays given the size of the embeddings
+            if img_embs is None:
+                img_embs = np.zeros((len(data_loader.dataset), img_emb.size(1)))
+                cap_embs = np.zeros((len(data_loader.dataset), cap_emb.size(1)))
 
-        # preserve the embeddings by copying from gpu and converting to numpy
-        if on_gpu:
+            # preserve the embeddings by copying from gpu and converting to numpy
             for i, id in enumerate(ids):
                 img_embs[id] = img_emb.data.cpu().numpy().copy()[i]
                 cap_embs[id] = cap_emb.data.cpu().numpy().copy()[i]
-        else:
-            for i, id in enumerate(ids):
-                img_embs[id] = img_emb.data.numpy().copy()[i]
-                cap_embs[id] = cap_emb.data.numpy().copy()[i]
 
-        # measure accuracy and record loss
-        model.forward_loss(img_emb, cap_emb)
+            # measure accuracy and record loss
+            model.forward_loss(img_emb, cap_emb)
 
-        # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
 
-        if i % log_step == 0:
-            logging('Test: [{0}/{1}]\t'
-                    '{e_log}\t'
-                    'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                    .format(
-                        i, len(data_loader), batch_time=batch_time,
-                        e_log=str(model.logger)))
-        del images, captions
+            if i % log_step == 0:
+                logging('Test: [{0}/{1}]\t'
+                        '{e_log}\t'
+                        'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                        .format(
+                            i, len(data_loader), batch_time=batch_time,
+                            e_log=str(model.logger)))
+            del images, captions
 
     return img_embs, cap_embs
 
 
-def evalrank(model_path, data_path=None, vocab_path=None, split='dev', fold5=False, on_gpu=False):
+def evalrank(model_path, data_path=None, split='dev', fold5=False):
     """
     Evaluate a trained model on either dev or test. If `fold5=True`, 5 fold
     cross-validation is done (only for MSCOCO). Otherwise, the full data is
     used for evaluation.
     """
     # load model and options
-    device = 'cpu' if not on_gpu else 'cuda'
-    checkpoint = torch.load(model_path, map_location=torch.device(device))
+    checkpoint = torch.load(model_path)
     opt = checkpoint['opt']
     if data_path is not None:
         opt.data_path = data_path
-
-    if vocab_path is not None:
-        opt.vocab_path = vocab_path
 
     # load vocabulary used by the model
     with open(os.path.join(opt.vocab_path,
@@ -159,7 +150,7 @@ def evalrank(model_path, data_path=None, vocab_path=None, split='dev', fold5=Fal
                                   opt.batch_size, opt.workers, opt)
 
     print('Computing results...')
-    img_embs, cap_embs = encode_data(model, data_loader, on_gpu=on_gpu)
+    img_embs, cap_embs = encode_data(model, data_loader)
     print('Images: %d, Captions: %d' %
           (img_embs.shape[0] / 5, cap_embs.shape[0]))
 
@@ -273,7 +264,6 @@ def t2i(images, captions, npts=None, measure='cosine', return_ranks=False):
     """
     if npts is None:
         npts = int(images.shape[0] / 5)
-        print(npts)
     ims = numpy.array([images[i] for i in range(0, len(images), 5)])
 
     ranks = numpy.zeros(5 * npts)
