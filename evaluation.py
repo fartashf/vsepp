@@ -186,16 +186,16 @@ def evalrank(model_path, data_path=None, split='dev', fold5=False):
             ari = (ri[0] + ri[1] + ri[2]) / 3
             rsum = r[0] + r[1] + r[2] + ri[0] + ri[1] + ri[2]
             print("rsum: %.1f ar: %.1f ari: %.1f" % (rsum, ar, ari))
-            results += [list(r) + list(ri) + [ar, ari, rsum]]
+            results += [list(r) + list(ri) + [rsum, ar, ari]]
 
         print("-----------------------------------")
         print("Mean metrics: ")
         mean_metrics = tuple(np.array(results).mean(axis=0).flatten())
-        print("rsum: %.1f" % (mean_metrics[12]))
-        print("Average i2t Recall: %.1f" % mean_metrics[10])
+        print("rsum: %.1f" % (mean_metrics[10] * 6))
+        print("Average i2t Recall: %.1f" % mean_metrics[11])
         print("Image to text: %.1f %.1f %.1f %.1f %.1f" %
               mean_metrics[:5])
-        print("Average t2i Recall: %.1f" % mean_metrics[11])
+        print("Average t2i Recall: %.1f" % mean_metrics[12])
         print("Text to image: %.1f %.1f %.1f %.1f %.1f" %
               mean_metrics[5:10])
 
