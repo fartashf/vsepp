@@ -186,7 +186,7 @@ def evalrank(model_path, data_path=None, split='dev', fold5=False):
             ari = (ri[0] + ri[1] + ri[2]) / 3
             rsum = r[0] + r[1] + r[2] + ri[0] + ri[1] + ri[2]
             print("rsum: %.1f ar: %.1f ari: %.1f" % (rsum, ar, ari))
-            results += [list(r) + list(ri) + [ar, ari, rsum]]
+            results += [list(r) + list(ri) + [rsum, ar, ari]]
 
         print("-----------------------------------")
         print("Mean metrics: ")
